@@ -1,0 +1,312 @@
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Section */
+        .header-section {
+            padding: 4rem 2rem;
+            text-align: center;
+            background-color: #f0f8ff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(83, 144, 191, 0.1) 0%, rgba(70, 130, 180, 0.1) 100%);
+            z-index: 1;
+        }
+
+        .header-section h1 {
+            font-size: 3rem;
+            color: #5390bf;
+            margin-bottom: 1.5rem;
+            position: relative;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .header-section h1::after {
+            content: "";
+            width: 100px;
+            height: 3px;
+            background-color: #5390bf;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        /* Who Are We Section */
+        .who-we-are {
+            display: flex;
+            padding: 4rem 2rem;
+            background-color: #fff;
+            gap: 3rem;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .who-we-are img {
+            flex: 1;
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .who-we-are img:hover {
+            transform: scale(1.02);
+        }
+
+        .who-we-are-content {
+            flex: 2;
+        }
+
+        .who-we-are-content h2 {
+            font-size: 2.5rem;
+            color: #5390bf;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .who-we-are-content h2::after {
+            content: "";
+            width: 80px;
+            height: 3px;
+            background-color: #5390bf;
+            display: block;
+            margin: 1rem 0;
+        }
+
+        .who-we-are-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Our Objective Section */
+        .objective-section {
+            padding: 4rem 2rem;
+            background-color: #f8f8f8;
+            text-align: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .objective-section h2 {
+            font-size: 2.5rem;
+            color: #5390bf;
+            margin-bottom: 2rem;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .objective-section h2::after {
+            content: "";
+            width: 80px;
+            height: 3px;
+            background-color: #5390bf;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        .objective-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: flex-start;
+            font-size: 1.1rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .objective-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .objective-item i {
+            font-size: 2rem;
+            color: #5390bf;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Our Vision & Mission Section */
+        .vision-mission-section {
+            display: flex;
+            padding: 4rem 2rem;
+            background-color: #f0f8ff;
+            gap: 2rem;
+            justify-content: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .vision-mission-card {
+            flex: 1;
+            padding: 2.5rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #5390bf, #4682B4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vision-mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vision-mission-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .vision-mission-card:hover::before {
+            opacity: 1;
+        }
+
+        .vision-mission-card h2 {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .vision-mission-card p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ffffff;
+        }
+
+        /* Footer alignment */
+        footer {
+            margin-top: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .who-we-are,
+            .objective-section,
+            .vision-mission-section {
+                padding: 3rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 3rem 1.5rem;
+            }
+
+            .header-section h1 {
+                font-size: 2.5rem;
+            }
+
+            .who-we-are {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .who-we-are img {
+                width: 100%;
+                max-width: 500px;
+            }
+
+            .who-we-are-content h2 {
+                font-size: 2rem;
+                text-align: center;
+            }
+
+            .who-we-are-content h2::after {
+                margin: 1rem auto;
+            }
+
+            .objective-section h2 {
+                font-size: 2rem;
+            }
+
+            .objective-list {
+                grid-template-columns: 1fr;
+            }
+
+            .vision-mission-section {
+                flex-direction: column;
+                padding: 3rem 1.5rem;
+            }
+
+            .vision-mission-card {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-section {
+                padding: 2rem 1rem;
+            }
+
+            .header-section h1 {
+                font-size: 2rem;
+            }
+
+            .who-we-are-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .who-we-are-content p {
+                font-size: 1rem;
+            }
+
+            .objective-section h2 {
+                font-size: 1.8rem;
+            }
+
+            .objective-item {
+                font-size: 1rem;
+                padding: 1.2rem;
+            }
+
+            .vision-mission-card h2 {
+                font-size: 1.8rem;
+            }
+
+            .vision-mission-card p {
+                font-size: 1rem;
+            }
+        }

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UVP Foundation Blogs</title>
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="footer.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCH2BYhLITb-RrzosdVmJfl7H1TUyqG_To",
+            authDomain: "uvp-foundation-e5ece.firebaseapp.com",
+            projectId: "uvp-foundation-e5ece",
+            storageBucket: "uvp-foundation-e5ece.appspot.com",
+            messagingSenderId: "501646281843",
+            appId: "1:501646281843:web:6fe9ecff026df0c671ee06"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function fetchBlogs() {
+            const querySnapshot = await getDocs(collection(db, "blogs"));
+            const blogContainer = document.getElementById("blog-container");
+            
+            querySnapshot.forEach(doc => {
+                const blog = doc.data();
+                const blogElement = document.createElement("div");
+                blogElement.classList.add("blog-item");
+                blogElement.classList.add("animate-on-scroll");
+                blogElement.innerHTML = `
+                    <div class="blog-preview">
+                        <h2 class="reveal-text">${blog.title}</h2>
+                        <p class="blog-date"><strong>${blog.date}</strong></p>
+                        <p class="blog-subtitle">${blog.subtitle}</p>
+                        <button class="read-more-btn btn-hover-effect">Read More</button>
+                    </div>
+                    <div class="blog-full-content" style="display: none;">
+                        <div class="blog-header">
+                            <h1>${blog.title}</h1>
+                            <p class="blog-date">${blog.date}</p>
+                            <p class="blog-subtitle">${blog.subtitle}</p>
+                        </div>
+                        <div class="blog-body">
+                            ${blog.content}
+                        </div>
+                        <button class="back-to-blogs btn-hover-effect">Back to Blogs</button>
+                    </div>
+                `;
+                
+                const readMoreBtn = blogElement.querySelector(".read-more-btn");
+                const backBtn = blogElement.querySelector(".back-to-blogs");
+                const preview = blogElement.querySelector(".blog-preview");
+                const fullContent = blogElement.querySelector(".blog-full-content");
+                
+                readMoreBtn.addEventListener("click", function() {
+                    preview.style.display = "none";
+                    fullContent.style.display = "block";
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                
+                backBtn.addEventListener("click", function() {
+                    preview.style.display = "block";
+                    fullContent.style.display = "none";
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                
+                blogContainer.appendChild(blogElement);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchBlogs);
+    </script>
+    <script>
+        function toggleNavbar() {
+            const links = document.querySelector('.navbar-links');
+            links.classList.toggle('active');
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".nav-link").forEach(link => {
+                if (link.href === window.location.href) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+        
+        .container h1 {
+            text-align: center;
+            color: #5390bf;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            position: relative;
+        }
+        
+        .container h1::after {
+            content: "";
+            width: 100px;
+            height: 3px;
+            background-color: #5390bf;
+            display: block;
+            margin: 0.5rem auto 0;
+        }
+        
+        .blog-item {
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .blog-preview {
+            padding: 2rem;
+        }
+        
+        .blog-preview h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .blog-date {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .blog-subtitle {
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .blog-full-content {
+            padding: 2rem;
+            background: white;
+        }
+        
+        .blog-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .blog-header h1 {
+            color: #5390bf;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .blog-body {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        
+        .read-more-btn, .back-to-blogs {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: #5390bf;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .read-more-btn:hover, .back-to-blogs:hover {
+            background-color: #4682B4;
+        }
+        
+        .back-to-blogs {
+            display: block;
+            margin: 2rem auto 0;
+            max-width: 200px;
+            text-align: center;
+        }
+        
+        footer {
+            margin-top: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            
+            .container h1 {
+                font-size: 2rem;
+            }
+            
+            .blog-preview, .blog-full-content {
+                padding: 1.5rem;
+            }
+            
+            .blog-header h1 {
+                font-size: 2rem;
+            }
+            
+            .blog-body {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <a href="index.html">
+                <img src="assets/imgs/logo.png" alt="UVP Foundation Logo" class="fade-in" />
+            </a>
+            <span class="hamburger" onclick="toggleNavbar()">&#9776;</span>
+        </div>
+        <ul class="navbar-links">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="programs.html" class="nav-link">Programs</a></li>
+            <li><a href="blogs.html" class="nav-link">Blogs</a></li>
+            <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+            <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+            <li><a href="login.html" class="register-btn">ERP</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <h1 class="animate-on-scroll" data-animation="scale-up">Our Blogs</h1>
+        <div id="blog-container">
+            <!-- Blog content will be dynamically inserted here -->
+        </div>
+    </div>
+    
+    <!-- Footer Section -->
+    <footer class="footer">
+        <!-- Column 1: Company Info -->
+        <div class="footer-column animate-on-scroll" data-animation="slide-up">
+            <h3>UVP Foundation</h3>
+            <img src="assets/imgs/logo.png" alt="UVP Foundation Logo" class="footer-logo">
+            <p>Udyam Vidya Prasar Foundation is a section 8 company, working in startup and entrepreneurship, skill development, education, research and development, innovation commercialization, and self-employment. It is an association of professionals who are working in skill development, innovation, incubation, and entrepreneurship for the last 17 years.</p>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="footer-column animate-on-scroll delay-1" data-animation="slide-up">
+            <h3>Quick Links</h3><br>
+            <ul class="quick-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="programs.html">Programs</a></li>
+                <li><a href="gallery.html">Our Gallery</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="login.html">ERP</a></li>
+                <li><a href="blogs.html">Blogs</a></li>
+            </ul>
+        </div>
+
+        <!-- Column 3: Contact Info -->
+        <div class="footer-column animate-on-scroll delay-2" data-animation="slide-up">
+            <h3>Contact Us</h3><br>
+            <div class="contact-info">
+                <p>Ashish D. Thombre<br>
+                    Udyam Vidya Prasar Foundation<br>
+                    Mobile No.: 9871963840<br>
+                    Email: <a href="mailto:upv.foundation@gmail.com">upv.foundation@gmail.com</a></p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="animations.js"></script>
+</body>
+</html>

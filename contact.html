@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href=" nav.css">
+    <link rel="stylesheet" href=" contact.css">
+    <link rel="stylesheet" href=" footer.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <a href="index.html">
+                <img src="assets/imgs/logo.png" alt="UVP Foundation Logo" /></a>
+            <span class="hamburger" onclick="toggleNavbar()">&#9776;</span>
+        </div>
+        <ul class="navbar-links">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="programs.html" class="nav-link">Programs</a></li>
+            <li><a href="blogs.html" class="nav-link">Blogs</a></li>
+            <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+            <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+            <li><a href="login.html" class="register-btn">ERP</a></li>
+        </ul>
+    </nav>
+
+
+
+        <!-- Contact Form Section -->
+        <section class="form-container">
+            <h2>Contact Us</h2>
+            <form action="#" method="POST">
+                <!-- First Name -->
+                <div class="form-group">
+                    <label for="first-name">First Name <span style="color: red;">*</span></label>
+                    <input type="text" id="first-name" name="first-name" required>
+                </div>
+    
+                <!-- Last Name -->
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" id="last-name" name="last-name">
+                </div>
+    
+                <!-- Mobile Number -->
+                <div class="form-group">
+                    <label for="mobile">Mobile Number <span style="color: red;">*</span></label>
+                    <input type="tel" id="mobile" name="mobile" required pattern="[0-9]{10}" placeholder="10-digit mobile number">
+                </div>
+    
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email <span style="color: red;">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+    
+                <!-- Message -->
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message"></textarea>
+                </div>
+    
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </section>
+
+
+        <!-- Footer Section -->
+        <footer class="footer">
+            <!-- Column 1: Company Info -->
+            <div class="footer-column">
+                <h3>UVP Foundation</h3>
+                <img src="assets/imgs/logo.png" alt="UVP Foundation Logo" class="footer-logo"> <!-- Replace with your logo path -->
+                <p>Udyam Vidya Prasar Foundation is a section 8 company, working in startup and entrepreneurship, skill development, education, research and development, innovation commercialization, and self-employment. It is an association of professionals who are working in skill development, innovation, incubation, and entrepreneurship for the last 17 years.</p>
+            </div>
+    
+            <!-- Column 2: Quick Links -->
+            <div class="footer-column">
+                <h3>Quick Links</h3><br>
+                <ul class="quick-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="programs.html">Programs</a></li>
+                    <li><a href="gallery.html">Our Gallery</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="login.html">ERP</a></li>
+                    <li><a href="blogs.html">Blogs</a></li>
+                </ul>
+            </div>
+    
+            <!-- Column 3: Contact Info -->
+            <div class="footer-column">
+                <h3>Contact Us</h3><br>
+                <div class="contact-info">
+                    <p>Ashish D. Thombre<br>
+                        Udyam Vidya Prasar Foundation<br>
+                        Mobile No.: 9871963840<br>
+                        Email: <a href="mailto:upv.foundation@gmail.com">upv.foundation@gmail.com</a></p>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+    
+            // Highlight the active nav link
+    document.querySelectorAll(".nav-link").forEach(link => {
+        if (link.href === window.location.href) {
+            link.classList.add("active");
+        }
+    });
+
+    
+function toggleNavbar() {
+    const links = document.querySelector('.navbar-links');
+    links.classList.toggle('active');
+}
+
+            </script>
+    
+</body>
+</html>

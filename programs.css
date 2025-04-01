@@ -1,0 +1,200 @@
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Programs Section Container */
+        .program-container {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Section Heading */
+        .program-container h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #5390bf;
+            margin-bottom: 3rem;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .program-container h2::after {
+            content: "";
+            width: 80px;
+            height: 3px;
+            background-color: #5390bf;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        /* Program Section Layout */
+        .program-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            padding: 2rem;
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .program-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, #5390bf, #4682B4);
+        }
+
+        .program-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .program-section img {
+            width: 45%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .program-section:hover img {
+            transform: scale(1.02);
+        }
+
+        /* Program Content Styling */
+        .program-content {
+            width: 55%;
+        }
+
+        .program-content h3 {
+            font-size: 2rem;
+            color: #5390bf;
+            margin-bottom: 1.5rem;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .program-content h3::after {
+            content: "";
+            width: 60px;
+            height: 3px;
+            background-color: #5390bf;
+            display: block;
+            margin: 0.8rem 0;
+        }
+
+        .program-content p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .program-content p strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Footer alignment */
+        footer {
+            margin-top: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .program-section {
+                gap: 2rem;
+                padding: 1.5rem;
+            }
+
+            .program-section img {
+                width: 40%;
+            }
+
+            .program-content {
+                width: 60%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .program-container {
+                padding: 3rem 1.5rem;
+            }
+
+            .program-container h2 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .program-section {
+                flex-direction: column;
+                gap: 2rem;
+                margin-bottom: 3rem;
+                padding: 1.5rem;
+            }
+
+            .program-section img {
+                width: 100%;
+                max-width: 500px;
+            }
+
+            .program-content {
+                width: 100%;
+            }
+
+            .program-content h3 {
+                font-size: 1.8rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .program-content p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .program-container {
+                padding: 2rem 1rem;
+            }
+
+            .program-container h2 {
+                font-size: 1.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .program-section {
+                padding: 1.2rem;
+                margin-bottom: 2rem;
+            }
+
+            .program-content h3 {
+                font-size: 1.6rem;
+            }
+
+            .program-content p {
+                font-size: 0.95rem;
+            }
+        }

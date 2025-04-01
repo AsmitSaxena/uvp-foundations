@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Management Portal</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #4f46e5;
+            --accent-color: #818cf8;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        nav h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--primary-color);
+        }
+        
+        nav h1 svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        #logoutBtn {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        
+        #logoutBtn:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        .switches-container {
+            display: flex;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            padding: 0.5rem;
+        }
+        
+        .switches-container button {
+            flex: 1;
+            background-color: transparent;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            border-radius: calc(var(--border-radius) - 4px);
+        }
+        
+        .switches-container button svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .switches-container button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .switches-container button:hover:not(.active) {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        .card h2 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+        }
+        
+        .card h2 svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary-color);
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .profile-item {
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem;
+            background-color: #f8fafc;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .profile-item:hover {
+            background-color: #f1f5f9;
+            transform: translateY(-2px);
+        }
+        
+        .profile-item strong {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .profile-item strong svg {
+            color: var(--primary-color);
+        }
+        
+        .profile-item p {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .upload-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .upload-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 0.875rem;
+            font-size: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background-color: white;
+        }
+        
+        .growth-list {
+            list-style: none;
+        }
+        
+        .growth-item {
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .growth-item > div {
+            flex: 1;
+            margin-right: 1rem;
+        }
+        
+        .growth-item span {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .growth-item:hover {
+            transform: translateX(5px);
+            background-color: #f1f5f9;
+        }
+        
+        .growth-item strong {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .growth-progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .growth-progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .status-active {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .status-inactive {
+            background-color: var(--error-color);
+            color: white;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                        linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+                        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+            background-size: 20px 20px;
+            opacity: 0.1;
+        }
+        
+        .welcome-banner h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+            font-weight: 700;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.9;
+            position: relative;
+            font-size: 1.125rem;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.75rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            border-left-color: var(--success-color);
+        }
+        
+        .toast.error {
+            border-left-color: var(--error-color);
+        }
+        
+        .toast.warning {
+            border-left-color: var(--warning-color);
+        }
+        
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .switches-container {
+                flex-direction: column;
+            }
+            
+            .welcome-banner h1 {
+                font-size: 1.75rem;
+            }
+            
+            .welcome-banner p {
+                font-size: 1rem;
+            }
+        }
+        
+        .profile-photo-container {
+            grid-column: span 2;
+        }
+        
+        .profile-photo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .profile-photo img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--primary-color);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .photo-upload {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .photo-upload-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-upload-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .edit-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .edit-form-container {
+            background-color: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        .edit-form {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: var(--box-shadow);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .edit-form h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background-color: #f8fafc;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background-color: white;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .cancel-button {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-button:hover {
+            background-color: #e2e8f0;
+        }
+    </style>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCH2BYhLITb-RrzosdVmJfl7H1TUyqG_To",
+            authDomain: "uvp-foundation-e5ece.firebaseapp.com",
+            projectId: "uvp-foundation-e5ece",
+            storageBucket: "uvp-foundation-e5ece.appspot.com",
+            messagingSenderId: "501646281843",
+            appId: "1:501646281843:web:6fe9ecff026df0c671ee06"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth();
+        const storage = getStorage(app);
+
+        let currentStartupId = null;
+        const mainSection = document.getElementById("mainSection");
+        let isLoading = false;
+        
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    ${type === 'success' ? 
+                        '<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.707-3.293a1 1 0 0 0-1.414 0L7.586 6.586a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l2-2a1 1 0 0 0 0-1.414z"/>' :
+                        type === 'error' ?
+                        '<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 0 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8.707 8l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>' :
+                        '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M7 6a1 1 0 0 1 2 0v4a1 1 0 0 1-2 0V6zm0 6a1 1 0 0 1 2 0v1a1 1 0 0 1-2 0v-1z"/>'
+                    }
+                </svg>
+                ${message}
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Set active tab styling
+        function setActiveTab(tabId) {
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Fetch the startup ID dynamically based on the logged-in user's email
+        async function fetchCurrentStartupId(userEmail) {
+            try {
+                const startupsCollection = collection(db, "startups");
+                const snapshot = await getDocs(startupsCollection);
+
+                for (const docSnapshot of snapshot.docs) {
+                    const startupData = docSnapshot.data();
+                    if (startupData.email === userEmail) {
+                        currentStartupId = docSnapshot.id;
+                        return;
+                    }
+                }
+
+                throw new Error("No matching startup found for the logged-in user.");
+            } catch (error) {
+                console.error("Error fetching current startup ID:", error);
+                mainSection.innerHTML = `
+                    <div class="card">
+                        <h2>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 6a1 1 0 0 1 2 0v4a1 1 0 0 1-2 0V6zm0 6a1 1 0 0 1 2 0v1a1 1 0 0 1-2 0v-1z"/>
+                            </svg>
+                            Error
+                        </h2>
+                        <p>Error loading startup ID: ${error.message}</p>
+                    </div>
+                `;
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function fetchStartupData() {
+            if (isLoading) return null;
+            
+            try {
+                isLoading = true;
+                mainSection.innerHTML = `
+                    <div class="card">
+                        <div style="display: flex; align-items: center; justify-content: center; padding: 2rem;">
+                            <div class="loading-spinner"></div>
+                            <span>Loading your data...</span>
+                        </div>
+                    </div>
+                `;
+
+                if (!currentStartupId) {
+                    throw new Error("Startup ID not found. Please log in.");
+                }
+
+                const startupRef = doc(db, "startups", currentStartupId);
+                const startupSnap = await getDoc(startupRef);
+
+                if (startupSnap.exists()) {
+                    return startupSnap.data();
+                } else {
+                    throw new Error("Startup data not found.");
+                }
+            } catch (error) {
+                console.error("Error fetching startup data:", error);
+                mainSection.innerHTML = `
+                    <div class="card">
+                        <h2>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 6a1 1 0 0 1 2 0v4a1 1 0 0 1-2 0V6zm0 6a1 1 0 0 1 2 0v1a1 1 0 0 1-2 0v-1z"/>
+                            </svg>
+                            Error
+                        </h2>
+                        <p>Error loading data: ${error.message}</p>
+                    </div>
+                `;
+                showToast(error.message, 'error');
+                return null;
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function getStatusClass(status) {
+            status = status.toLowerCase();
+            if (status === 'active') return 'status-active';
+            if (status === 'pending') return 'status-pending';
+            return 'status-inactive';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            try {
+                const date = new Date(dateString);
+                return new Intl.DateTimeFormat('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                }).format(date);
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function renderProfileAndDocuments(startup) {
+            const formattedDate = formatDate(startup.registrationDate);
+            const statusClass = getStatusClass(startup.status || '');
+            
+            // Map level number to descriptive level name
+            const levelNames = [
+                "Ideation Stage",
+                "PoC/Prototype",
+                "Business Plan/Model",
+                "Pitch Ready",
+                "Team Building",
+                "Funding/Investment Stage"
+            ];
+            
+            const levelName = startup.level ? levelNames[startup.level - 1] || `Level ${startup.level}` : 'Not specified';
+            
+            // Store current startup data in a global variable for the edit form
+            window.currentStartupData = startup;
+            
+            mainSection.innerHTML = `
+                <div class="welcome-banner">
+                    <h1>Welcome, ${startup.ownerName || 'Entrepreneur'}!</h1>
+                    <p>Manage your startup journey and track your progress</p>
+                </div>
+                
+                <div class="card">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                        </svg>
+                        Profile Details
+                    </h2>
+                    <div style="display: flex; justify-content: flex-end; margin-top: -3.5rem; margin-bottom: 1.5rem;">
+                        <button id="editProfileBtn" class="edit-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                            </svg>
+                            Edit Profile
+                        </button>
+                    </div>
+                    <div class="profile-grid">
+                        <div class="profile-item">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                </svg>
+                                Name
+                            </strong>
+                            <p>${startup.ownerName || 'Not specified'}</p>
+                        </div>
+                        <div class="profile-item">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                                    <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"/>
+                                </svg>
+                                Organization
+                            </strong>
+                            <p>${startup.organizationName || 'Not specified'}</p>
+                        </div>
+                        <div class="profile-item">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                                </svg>
+                                Phone
+                            </strong>
+                            <p>${startup.phoneNumber || 'Not specified'}</p>
+                        </div>
+                        <div class="profile-item">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                            </svg>
+                            Email
+                            </strong>
+                            <p>${startup.email || 'Not specified'}</p>
+                        </div>
+                        <div class="profile-item">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                                </svg>
+                                Status
+                            </strong>
+                            <p><span class="status-badge ${statusClass}">${startup.status || 'Not specified'}</span></p>
+                        </div>
+                        <div class="profile-item">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                </svg>
+                                Registration Date
+                            </strong>
+                            <p>${formattedDate}</p>
+                        </div>
+                        <div class="profile-item">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                                </svg>
+                                Level
+                            </strong>
+                            <p>${levelName}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                            <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                            <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+                        </svg>
+                        Legal Documents
+                    </h2>
+                    <p style="margin-bottom: 1rem;">
+                        ${startup.driveLink ? 
+                            `<a href="${startup.driveLink}" target="_blank" style="color: var(--secondary-color); text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 0 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0V3z"/>
+                                </svg>
+                                View Uploaded Documents
+                            </a>` : 
+                            `<span style="color: #6c757d; font-style: italic;">No documents uploaded yet</span>`
+                        }
+                    </p>
+                    <input type="text" id="driveLinkInput" placeholder="Enter Google Drive or document link" value="${startup.driveLink || ''}">
+                    <button id="saveDriveLink" class="upload-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                        </svg>
+                        Save Document Link
+                    </button>
+                </div>
+            `;
+
+            document.getElementById("saveDriveLink").addEventListener("click", updateDriveLink);
+            document.getElementById("editProfileBtn").addEventListener("click", openEditForm);
+            setActiveTab('profileSwitch');
+        }
+
+        async function updateDriveLink() {
+            const newLink = document.getElementById("driveLinkInput").value.trim();
+
+            if (!newLink) {
+                showToast("Document link cannot be empty.", "warning");
+                return;
+            }
+
+            try {
+                if (!currentStartupId) {
+                    throw new Error("Startup ID not found. Please log in.");
+                }
+
+                const startupRef = doc(db, "startups", currentStartupId);
+                await updateDoc(startupRef, { driveLink: newLink });
+
+                showToast("Document link updated successfully!");
+                initializeProfileAndDocuments(); // Re-render the section
+            } catch (error) {
+                console.error("Error updating drive link:", error);
+                showToast("Failed to update document link. Please try again.", "error");
+            }
+        }
+
+        function openEditForm() {
+            const formContainer = document.getElementById("editFormContainer");
+            const form = document.getElementById("editProfileForm");
+            const startup = window.currentStartupData;
+            
+            // Populate the form with current data
+            document.getElementById("ownerName").value = startup.ownerName || '';
+            document.getElementById("organizationName").value = startup.organizationName || '';
+            document.getElementById("phoneNumber").value = startup.phoneNumber || '';
+            document.getElementById("email").value = startup.email || '';
+            
+            // Show the form
+            formContainer.style.display = "flex";
+            
+            // Add event listeners for the form
+            document.getElementById("cancelEditBtn").addEventListener("click", closeEditForm);
+            form.addEventListener("submit", handleEditFormSubmit);
+        }
+        
+        function closeEditForm() {
+            document.getElementById("editFormContainer").style.display = "none";
+        }
+        
+        async function handleEditFormSubmit(event) {
+            event.preventDefault();
+            
+            const formData = {
+                ownerName: document.getElementById("ownerName").value,
+                organizationName: document.getElementById("organizationName").value,
+                phoneNumber: document.getElementById("phoneNumber").value,
+                email: document.getElementById("email").value
+            };
+            
+            try {
+                if (!currentStartupId) {
+                    throw new Error("Startup ID not found. Please log in.");
+                }
+                
+                // Update the Firestore document
+                const startupRef = doc(db, "startups", currentStartupId);
+                await updateDoc(startupRef, formData);
+                
+                // Close the form
+                closeEditForm();
+                
+                // Show success message
+                showToast("Profile updated successfully!");
+                
+                // Refresh the profile display
+                initializeProfileAndDocuments();
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                showToast("Failed to update profile. Please try again.", "error");
+            }
+        }
+
+        async function renderGrowth() {
+            const startupData = await fetchStartupData();
+
+            if (startupData) {
+                const growthPoints = [
+                    "Startup Idea Validation, Market surveys",
+                    "Business Model Canvas",
+                    "Legal compliances and Secretarial Services",
+                    "PoC, Prototyping, testing and MVP Development",
+                    "Government grants and Angel funding",
+                    "Marketing Planning",
+                    "Product and service development",
+                    "Go to Market -Strategy development and Implementation",
+                    "Branding and Promotion",
+                    "Funding and Investment",
+                    "Systems and structures development",
+                    "Scaling Up"
+                ];
+
+                mainSection.innerHTML = `
+                    <div class="welcome-banner">
+                        <h1>Growth Metrics</h1>
+                        <p>Track your startup's progress across key growth areas</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
+                            Growth Timeline
+                        </h2>
+                        <ul class="growth-list">
+                            ${
+                                startupData.growth?.length
+                                    ? startupData.growth.map(
+                                          (value, index) => `
+                                            <li class="growth-item">
+                                                <div>
+                                                    <span>${growthPoints[index]}</span>
+                                                    <div class="growth-progress-container">
+                                                        <div class="growth-progress-bar" style="width: ${value}%;"></div>
+                                                    </div>
+                                                </div>
+                                                <strong>${value}%</strong>
+                                            </li>`
+                                      ).join("")
+                                    : `<li class="growth-item" style="justify-content: center; color: #6c757d; font-style: italic;">No growth data available yet.</li>`
+                            }
+                        </ul>
+                    </div>
+                `;
+                setActiveTab('growthSwitch');
+            }
+        }
+
+        async function initializeProfileAndDocuments() {
+            const startupData = await fetchStartupData();
+            if (startupData) renderProfileAndDocuments(startupData);
+        }
+
+        // Authenticate and load data
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await fetchCurrentStartupId(user.email);
+                initializeProfileAndDocuments();
+            } else {
+                mainSection.innerHTML = `
+                    <div class="card">
+                        <h2>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                            </svg>
+                            Authentication Required
+                        </h2>
+                        <p>Please log in to view your startup details.</p>
+                        <a href="login.html" class="upload-button" style="display: inline-block; margin-top: 1rem; text-decoration: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
+                            Go to Login
+                        </a>
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error("Logout failed: ", error);
+                showToast("Failed to log out. Please try again.", "error");
+            }
+        });
+
+        document.getElementById("profileSwitch").addEventListener("click", initializeProfileAndDocuments);
+        document.getElementById("growthSwitch").addEventListener("click", renderGrowth);
+
+    </script>
+</head>
+<body>
+    <nav>
+        <h1>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm-3.5-7h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5z"/>
+            </svg>
+            Startup Management Portal
+        </h1>
+        <button id="logoutBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M12 1a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2a1 1 0 0 1 1-1h8zm-2 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+            Logout
+        </button>
+    </nav>
+    
+    <div class="container">
+        <div class="switches-container">
+            <button id="profileSwitch" class="tab-button active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                </svg>
+                Profile & Documents
+            </button>
+            <button id="growthSwitch" class="tab-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                Growth Metrics
+            </button>
+        </div>
+        
+        <div id="mainSection">
+            <!-- Dynamic content will be rendered here -->
+            <div class="card">
+                <div style="display: flex; align-items: center; justify-content: center; padding: 2rem;">
+                    <div class="loading-spinner"></div>
+                    <span>Loading your data...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="editFormContainer" class="edit-form-container" style="display: none;">
+            <div class="edit-form">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                    </svg>
+                    Edit Profile Details
+                </h3>
+                <form id="editProfileForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="ownerName">Name</label>
+                            <input type="text" id="ownerName" name="ownerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="organizationName">Organization</label>
+                            <input type="text" id="organizationName" name="organizationName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelEditBtn" class="cancel-button">Cancel</button>
+                        <button type="submit" class="upload-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                            </svg>
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

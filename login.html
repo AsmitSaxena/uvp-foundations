@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Login | UVP Foundation</title>
+    <link rel="stylesheet" href="login.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCH2BYhLITb-RrzosdVmJfl7H1TUyqG_To",
+            authDomain: "uvp-foundation-e5ece.firebaseapp.com",
+            projectId: "uvp-foundation-e5ece",
+            storageBucket: "uvp-foundation-e5ece.appspot.com",
+            messagingSenderId: "501646281843",
+            appId: "1:501646281843:web:6fe9ecff026df0c671ee06"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const mainSection = document.getElementById("mainSection");
+
+        // Forgot Password Functionality
+        async function handleForgotPassword() {
+            const email = prompt("Enter your email to reset your password:");
+            if (!email) {
+                alert("Email is required!");
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert("Password reset email sent! Check your inbox.");
+            } catch (error) {
+                console.error("Error sending password reset email:", error);
+                alert("Failed to send reset email. Please try again.");
+            }
+        }
+
+        // Admin/Mentor Login
+        function renderAdminMentorLogin() {
+            mainSection.innerHTML = `
+                <h2>Admin / Mentor Login</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+                </form>
+                <p class="forgot-password">
+                    <a href="#" id="forgotPasswordLink"><i class="fas fa-key"></i> Forgot Password?</a>
+                </p>
+            `;
+
+            document.getElementById("loginForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+                    const adminsAndMentors = await getDocs(collection(db, "adminsAndMentors"));
+                    let isValidUser = false;
+
+                    adminsAndMentors.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.email === email) {
+                            isValidUser = true;
+                            if (data.role === "admin") {
+                                alert("Welcome, Admin!");
+                                window.location.href = "admin_dashboard.html";
+                            } else if (data.role === "mentor") {
+                                alert("Welcome, Mentor!");
+                                window.location.href = "mentor_dashboard.html";
+                            }
+                        }
+                    });
+
+                    if (!isValidUser) {
+                        alert("Unauthorized access. You are not an Admin or Mentor.");
+                    }
+                } catch (error) {
+                    console.error("Error during Admin/Mentor Login: ", error);
+                    alert("Invalid login. Please try again.");
+                }
+            });
+
+            document.getElementById("forgotPasswordLink").addEventListener("click", handleForgotPassword);
+        }
+
+        // Startup Login
+        function renderStartupLogin() {
+            mainSection.innerHTML = `
+                <h2>Startup Login</h2>
+                <form id="startupLoginForm">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="startupEmail" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="startupPassword" placeholder="Password" required>
+                    </div>
+                    <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+                </form>
+                <p class="forgot-password">
+                    <a href="#" id="forgotPasswordLink"><i class="fas fa-key"></i> Forgot Password?</a>
+                </p>
+            `;
+
+            document.getElementById("startupLoginForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const email = document.getElementById("startupEmail").value;
+                const password = document.getElementById("startupPassword").value;
+
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+                    const startups = await getDocs(collection(db, "startups"));
+                    let isValidStartup = false;
+
+                    startups.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.email === email) {
+                            isValidStartup = true;
+                            alert(`Welcome, ${data.organizationName}!`);
+                            window.location.href = "startup_dashboard.html";
+                        }
+                    });
+
+                    if (!isValidStartup) {
+                        alert("Startup not found. Please register first.");
+                    }
+                } catch (error) {
+                    console.error("Error during Startup Login: ", error);
+                    alert("Invalid login. Please try again.");
+                }
+            });
+
+            document.getElementById("forgotPasswordLink").addEventListener("click", handleForgotPassword);
+        }
+
+        // Startup Registration
+        function renderStartupRegister() {
+            mainSection.innerHTML = `
+                <h2>Startup Registration</h2>
+                <form id="registerForm">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="ownerName" placeholder="Name" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-building"></i>
+                        <input type="text" id="organizationName" placeholder="Organization Name" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="text" id="phoneNumber" placeholder="Phone Number" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="registerEmail" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="registerPassword" placeholder="Password" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-check-circle"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                    <label for="driveLink" id="driveLinkLabel" title="Upload your documents to drive and share the link here">
+                        <i class="fas fa-info-circle"></i> Drive Link for Company Documents
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-link"></i>
+                        <input type="url" id="driveLink" placeholder="Enter Drive link">
+                    </div>
+                    <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
+                </form>
+            `;
+
+            document.getElementById("registerForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const ownerName = document.getElementById("ownerName").value;
+                const organizationName = document.getElementById("organizationName").value;
+                const phoneNumber = document.getElementById("phoneNumber").value;
+                const email = document.getElementById("registerEmail").value;
+                const password = document.getElementById("registerPassword").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+                const driveLink = document.getElementById("driveLink").value;
+
+                if (password !== confirmPassword) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+
+                try {
+                    // Create user with email and password
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const uid = userCredential.user.uid;
+                    const registrationDate = new Date().toISOString();
+
+                    // Add startup data to Firestore
+                    await addDoc(collection(db, "startups"), {
+                        ownerName,
+                        organizationName,
+                        phoneNumber,
+                        email,
+                        driveLink,
+                        registrationDate,
+                        level: "null",
+                        status: "available"
+                    });
+
+                    alert("Startup registered successfully!");
+                    renderStartupLogin();
+                } catch (error) {
+                    console.error("Error during Startup Registration: ", error);
+                    alert("Registration failed. Please try again.");
+                }
+            });
+        }
+
+        // Startup Login/Register Options
+        function renderStartupLoginRegister() {
+            mainSection.innerHTML = `
+                <h2>Startup Portal</h2>
+                <div class="startup-options">
+                    <button id="startupLogin"><i class="fas fa-sign-in-alt"></i> Login</button>
+                    <button id="startupRegister"><i class="fas fa-user-plus"></i> Register</button>
+                </div>
+            `;
+
+            document.getElementById("startupLogin").addEventListener("click", renderStartupLogin);
+            document.getElementById("startupRegister").addEventListener("click", renderStartupRegister);
+        }
+
+        // Event Listeners for Buttons
+        document.getElementById("adminMentorSwitch").addEventListener("click", renderAdminMentorLogin);
+        document.getElementById("startupSwitch").addEventListener("click", renderStartupLoginRegister);
+
+        // Initial View
+        renderAdminMentorLogin();
+    </script>
+</head>
+<body>
+    <nav>
+        <h1><i class="fas fa-building"></i> UVP Foundation ERP</h1>
+    </nav>
+    
+    <div class="buttons-container">
+        <button id="adminMentorSwitch"><i class="fas fa-user-tie"></i> Admin / Mentor</button>
+        <button id="startupSwitch"><i class="fas fa-rocket"></i> Startup</button>
+    </div>
+    
+    <div class="main-section" id="mainSection">
+        <!-- Dynamic content -->
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2023 UVP Foundation. All rights reserved.</p>
+    </div>
+</body>
+</html>

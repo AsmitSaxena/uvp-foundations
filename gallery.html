@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery</title>
+    <link rel="stylesheet" href=" nav.css">
+    <link rel="stylesheet" href=" gallery.css">
+    <link rel="stylesheet" href=" footer.css">
+    <link rel="stylesheet" href=" animations.css">
+    <style>
+        /* Additional Gallery Animation Styles */
+        .gallery-item {
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item img {
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <a href="index.html">
+                <img src="assets/imgs/logo.png" alt="UVP Foundation Logo" class="fade-in" /></a>
+            <span class="hamburger" onclick="toggleNavbar()">&#9776;</span>
+        </div>
+        <ul class="navbar-links">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="programs.html" class="nav-link">Programs</a></li>
+            <li><a href="blogs.html" class="nav-link">Blogs</a></li>
+            <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+            <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+            <li><a href="login.html" class="register-btn">ERP</a></li>
+        </ul>
+    </nav>
+
+
+     <!-- Gallery Section -->
+     <section class="gallery-container">
+        <h2 class="animate-on-scroll" data-animation="scale-up">Event Gallery</h2>
+        <div class="gallery-grid">
+            <!-- Sample Images -->
+            <div class="gallery-item animate-on-scroll" data-animation="fade-in"><img src="assets/imgs/gallery/1.jpeg" alt="Event 1"></div>
+            <div class="gallery-item animate-on-scroll delay-1" data-animation="fade-in"><img src="assets/imgs/gallery/2.jpeg" alt="Event 2"></div>
+            <div class="gallery-item animate-on-scroll delay-2" data-animation="fade-in"><img src="assets/imgs/gallery/3.jpeg" alt="Event 3"></div>
+            <div class="gallery-item animate-on-scroll delay-3" data-animation="fade-in"><img src="assets/imgs/gallery/4.jpeg" alt="Event 4"></div>
+            <div class="gallery-item animate-on-scroll delay-4" data-animation="fade-in"><img src="assets/imgs/gallery/5.jpeg" alt="Event 5"></div>
+            <div class="gallery-item animate-on-scroll delay-5" data-animation="fade-in"><img src="assets/imgs/gallery/6.jpeg" alt="Event 6"></div>
+
+            <!-- Add more images as needed -->
+        </div>
+    </section>
+
+
+     <!-- Footer Section -->
+     <footer class="footer">
+        <!-- Column 1: Company Info -->
+        <div class="footer-column animate-on-scroll" data-animation="slide-up">
+            <h3>UVP Foundation</h3>
+            <img src="assets/imgs/logo.png" alt="UVP Foundation Logo" class="footer-logo"> <!-- Replace with your logo path -->
+            <p>Udyam Vidya Prasar Foundation is a section 8 company, working in startup and entrepreneurship, skill development, education, research and development, innovation commercialization, and self-employment. It is an association of professionals who are working in skill development, innovation, incubation, and entrepreneurship for the last 17 years.</p>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="footer-column animate-on-scroll delay-1" data-animation="slide-up">
+            <h3>Quick Links</h3><br>
+            <ul class="quick-links">
+                <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="programs.html">Programs</a></li>
+                    <li><a href="gallery.html">Our Gallery</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="login.html">ERP</a></li>
+                    <li><a href="blogs.html">Blogs</a></li>
+            </ul>
+        </div>
+
+        <!-- Column 3: Contact Info -->
+        <div class="footer-column animate-on-scroll delay-2" data-animation="slide-up">
+            <h3>Contact Us</h3><br>
+            <div class="contact-info">
+                <p>Ashish D. Thombre<br>
+                    Udyam Vidya Prasar Foundation<br>
+                    Mobile No.: 9871963840<br>
+                    Email: <a href="mailto:upv.foundation@gmail.com">upv.foundation@gmail.com</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="animations.js"></script>
+    <script>
+    
+        // Highlight the active nav link
+document.querySelectorAll(".nav-link").forEach(link => {
+    if (link.href === window.location.href) {
+        link.classList.add("active");
+    }
+});
+
+
+function toggleNavbar() {
+    const links = document.querySelector('.navbar-links');
+    links.classList.toggle('active');
+}
+
+
+        </script>
+    
+</body>
+</html>

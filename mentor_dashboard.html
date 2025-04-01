@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP - Mentor Dashboard</title>
+    <link rel="stylesheet" href="mentor_dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { 
+            getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, arrayUnion
+        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged , signOut} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCH2BYhLITb-RrzosdVmJfl7H1TUyqG_To",
+            authDomain: "uvp-foundation-e5ece.firebaseapp.com",
+            projectId: "uvp-foundation-e5ece",
+            storageBucket: "uvp-foundation-e5ece.appspot.com",
+            messagingSenderId: "501646281843",
+            appId: "1:501646281843:web:6fe9ecff026df0c671ee06"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth();
+
+        let mentorId = null;
+        const mainSection = document.getElementById("mainSection");
+
+        async function fetchCurrentMentorId(userEmail) {
+            try {
+                const mentorsCollection = collection(db, "adminsAndMentors");
+                const snapshot = await getDocs(mentorsCollection);
+
+                for (const docSnapshot of snapshot.docs) {
+                    const mentorData = docSnapshot.data();
+                    if (mentorData.email === userEmail) {
+                        mentorId = docSnapshot.id;
+                        return;
+                    }
+                }
+
+                throw new Error("No matching mentor found for the logged-in user.");
+            } catch (error) {
+                console.error("Error fetching current mentor ID:", error);
+                mainSection.innerHTML = `<p>Error loading mentor ID: ${error.message}</p>`;
+            }
+        }
+
+                // Function to load and display mentor's profile
+                async function loadMentorProfile(mentorId) {
+            try {
+                const mentorRef = doc(db, "adminsAndMentors", mentorId);
+                const mentorSnapshot = await getDoc(mentorRef);
+
+                if (mentorSnapshot.exists()) {
+                    const mentorData = mentorSnapshot.data();
+                    renderMentorProfile(mentorData);
+                } else {
+                    mainSection.innerHTML = `<p>Mentor profile not found.</p>`;
+                }
+            } catch (error) {
+                console.error("Error loading mentor profile:", error);
+                mainSection.innerHTML = `<p>Error loading mentor profile. Please try again later.</p>`;
+            }
+        }
+
+        function renderMentorProfile(mentorData) {
+            mainSection.innerHTML = `
+                <div class="profile-header">
+                    <h2>Mentor Profile</h2>
+                    <button id="editProfileBtn" class="edit-btn">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+                <div class="mentor-profile">
+                    <div class="profile-layout">
+                        <div class="avatar-container">
+                            <svg class="mentor-avatar" viewBox="0 0 380 480" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Head -->
+                                <circle cx="190" cy="100" r="80" fill="#f5d7b5" />
+                                <!-- Hair -->
+                                <path d="M130 60 Q190 10 250 60 L250 120 Q190 150 130 120 Z" fill="#333" />
+                                <!-- Face -->
+                                <circle cx="160" cy="90" r="8" fill="#333" /> <!-- Left eye -->
+                                <circle cx="220" cy="90" r="8" fill="#333" /> <!-- Right eye -->
+                                <path d="M170 120 Q190 135 210 120" fill="none" stroke="#333" stroke-width="3" /> <!-- Smile -->
+                                <!-- Body - Suit -->
+                                <path d="M110 180 L150 400 L230 400 L270 180 Z" fill="#2c3e50" /> <!-- Suit -->
+                                <path d="M170 180 L190 400 L210 180 Z" fill="#3498db" /> <!-- Tie -->
+                                <!-- Arms -->
+                                <path d="M110 180 L80 300" stroke="#2c3e50" stroke-width="40" /> <!-- Left arm -->
+                                <path d="M270 180 L300 300" stroke="#2c3e50" stroke-width="40" /> <!-- Right arm -->
+                                <!-- Legs -->
+                                <path d="M150 400 L140 480" stroke="#2c3e50" stroke-width="30" /> <!-- Left leg -->
+                                <path d="M230 400 L240 480" stroke="#2c3e50" stroke-width="30" /> <!-- Right leg -->
+                                <!-- Neck -->
+                                <path d="M170 160 L210 160" stroke="#f5d7b5" stroke-width="40" />
+                            </svg>
+                        </div>
+                        <div class="profile-section">
+                            <h3><i class="fas fa-user"></i> Personal Information</h3>
+                            <p><strong>Name:</strong> ${mentorData.name}</p>
+                            <p><strong>Email:</strong> ${mentorData.email}</p>
+                            <p><strong>Phone:</strong> ${mentorData.phone}</p>
+                            <p><strong>Designation:</strong> ${mentorData.designation}</p>
+                            <p><strong>Bio:</strong> ${mentorData.bio || "No bio added yet."}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("editProfileBtn").addEventListener("click", () => {
+                showEditProfileForm(mentorData);
+            });
+        }
+
+        function showEditProfileForm(mentorData) {
+            mainSection.innerHTML = `
+                <div class="profile-header">
+                    <h2>Edit Profile</h2>
+                    <button id="cancelEditBtn" class="cancel-btn">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div class="mentor-profile">
+                    <div class="profile-layout">
+                        <div class="avatar-container">
+                            <svg class="mentor-avatar" viewBox="0 0 380 480" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Head -->
+                                <circle cx="190" cy="100" r="80" fill="#f5d7b5" />
+                                <!-- Hair -->
+                                <path d="M130 60 Q190 10 250 60 L250 120 Q190 150 130 120 Z" fill="#333" />
+                                <!-- Face -->
+                                <circle cx="160" cy="90" r="8" fill="#333" /> <!-- Left eye -->
+                                <circle cx="220" cy="90" r="8" fill="#333" /> <!-- Right eye -->
+                                <path d="M170 120 Q190 135 210 120" fill="none" stroke="#333" stroke-width="3" /> <!-- Smile -->
+                                <!-- Body - Suit -->
+                                <path d="M110 180 L150 400 L230 400 L270 180 Z" fill="#2c3e50" /> <!-- Suit -->
+                                <path d="M170 180 L190 400 L210 180 Z" fill="#3498db" /> <!-- Tie -->
+                                <!-- Arms -->
+                                <path d="M110 180 L80 300" stroke="#2c3e50" stroke-width="40" /> <!-- Left arm -->
+                                <path d="M270 180 L300 300" stroke="#2c3e50" stroke-width="40" /> <!-- Right arm -->
+                                <!-- Legs -->
+                                <path d="M150 400 L140 480" stroke="#2c3e50" stroke-width="30" /> <!-- Left leg -->
+                                <path d="M230 400 L240 480" stroke="#2c3e50" stroke-width="30" /> <!-- Right leg -->
+                                <!-- Neck -->
+                                <path d="M170 160 L210 160" stroke="#f5d7b5" stroke-width="40" />
+                            </svg>
+                        </div>
+                        <form id="editProfileForm" class="edit-form">
+                            <div class="form-group">
+                                <label for="name"><i class="fas fa-user"></i> Name</label>
+                                <input type="text" id="name" name="name" value="${mentorData.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                                <input type="email" id="email" name="email" value="${mentorData.email}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone"><i class="fas fa-phone"></i> Phone</label>
+                                <input type="tel" id="phone" name="phone" value="${mentorData.phone}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="designation"><i class="fas fa-briefcase"></i> Designation</label>
+                                <input type="text" id="designation" name="designation" value="${mentorData.designation}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bio"><i class="fas fa-pen"></i> Bio</label>
+                                <textarea id="bio" name="bio" rows="4">${mentorData.bio || ""}</textarea>
+                            </div>
+                            <button type="submit" class="save-btn">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("cancelEditBtn").addEventListener("click", () => {
+                loadMentorProfile(mentorId);
+            });
+
+            document.getElementById("editProfileForm").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const updatedData = {
+                    name: document.getElementById("name").value,
+                    email: document.getElementById("email").value,
+                    phone: document.getElementById("phone").value,
+                    designation: document.getElementById("designation").value,
+                    bio: document.getElementById("bio").value
+                };
+
+                try {
+                    const mentorRef = doc(db, "adminsAndMentors", mentorId);
+                    await updateDoc(mentorRef, updatedData);
+                    alert("Profile updated successfully!");
+                    loadMentorProfile(mentorId);
+                } catch (error) {
+                    console.error("Error updating profile:", error);
+                    alert("Failed to update profile. Please try again.");
+                }
+            });
+        }
+
+        async function loadAvailableStartups() {
+            try {
+                const startupsRef = collection(db, "startups");
+                const availableQuery = query(startupsRef, where("status", "==", "available"));
+                const snapshot = await getDocs(availableQuery);
+
+                const availableStartups = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                renderAvailableStartups(availableStartups);
+            } catch (error) {
+                console.error("Error loading available startups:", error);
+                mainSection.innerHTML = `<p>Error loading startups. Please try again later.</p>`;
+            }
+        }
+
+        function getLevelName(level) {
+            const levelNames = [
+                "Ideation Stage",
+                "PoC/Prototype",
+                "Business Plan/Model",
+                "Pitch Ready",
+                "Team Building",
+                "Funding/Investment Stage"
+            ];
+            return levelNames[level - 1] || "Unknown Level";
+        }
+
+        function renderAvailableStartups(startups) {
+            mainSection.innerHTML = `
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Available Startups</h2>
+                    <p class="subtitle">${startups.length} startups available for mentoring</p>
+                </div>
+                <div class="container">
+                    ${startups.map(startup => {
+                        const level = parseInt(startup.level) || 1;
+                        return `
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-building"></i>
+                                <h4>${startup.organizationName || startup.name || 'Unnamed Startup'}</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="signal-icons">
+                                    ${generateSignalBars(level)}
+                                </div>
+                                <div class="level-name">${getLevelName(level)}</div>
+                                <button class="pick-btn" data-id="${startup.id}">
+                                    <i class="fas fa-hand-pointer"></i> Pick Startup
+                                </button>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            // Add event listeners for buttons
+            document.querySelectorAll('.pick-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const startupId = btn.getAttribute('data-id');
+                    pickStartup(startupId);
+                });
+            });
+        }
+
+        function generateSignalBars(level) {
+            const maxBars = 6;
+            let bars = '';
+            for (let i = 1; i <= maxBars; i++) {
+                // Calculate height percentage based on bar position
+                const height = (i / maxBars) * 100;
+                bars += `<div class="signal-bar ${i <= level ? 'active' : ''}" style="height: ${height}%"></div>`;
+            }
+            return `<div class="signal-icon">${bars}</div>`;
+        }
+
+        async function pickStartup(id) {
+            try {
+                const startupRef = doc(db, "startups", id);
+                await updateDoc(startupRef, { status: "Accepted" });
+
+                const mentorRef = doc(db, "adminsAndMentors", mentorId);
+                await updateDoc(mentorRef, { accepted: arrayUnion(id) });
+
+                alert("Startup picked successfully!");
+                loadAvailableStartups();
+            } catch (error) {
+                console.error("Error picking startup:", error);
+                alert("Failed to pick startup.");
+            }
+        }
+
+        async function loadAcceptedStartups() {
+            try {
+                const mentorRef = doc(db, "adminsAndMentors", mentorId);
+                const mentorSnapshot = await getDoc(mentorRef);
+
+                if (!mentorSnapshot.exists()) {
+                    mainSection.innerHTML = `<p>No accepted startups found.</p>`;
+                    return;
+                }
+
+                const mentorData = mentorSnapshot.data();
+                const acceptedStartupIds = mentorData.accepted || [];
+
+                if (acceptedStartupIds.length === 0) {
+                    mainSection.innerHTML = `<p>No startups have been accepted yet.</p>`;
+                    return;
+                }
+
+                const acceptedStartups = [];
+                for (const id of acceptedStartupIds) {
+                    const startupRef = doc(db, "startups", id);
+                    const startupSnapshot = await getDoc(startupRef);
+
+                    if (startupSnapshot.exists()) {
+                        acceptedStartups.push({
+                            id: startupSnapshot.id,
+                            ...startupSnapshot.data()
+                        });
+                    }
+                }
+
+                renderAcceptedStartups(acceptedStartups);
+            } catch (error) {
+                console.error("Error loading accepted startups:", error);
+                mainSection.innerHTML = `<p>Error loading accepted startups. Please try again later.</p>`;
+            }
+        }
+
+        function renderAcceptedStartups(startups) {
+            mainSection.innerHTML = `
+                <div class="section-header">
+                    <h2><i class="fas fa-check-circle"></i> Accepted Startups</h2>
+                    <p class="subtitle">${startups.length} startups under your mentorship</p>
+                </div>
+                <div class="container">
+                    ${startups.map(startup => {
+                        const level = parseInt(startup.level) || 1;
+                        return `
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-building"></i>
+                                <h4>${startup.organizationName || startup.name}</h4>
+                                <div class="complete-checkbox">
+                                    <label class="checkbox-container" title="Mark as Complete">
+                                        <input type="checkbox" class="complete-check" data-id="${startup.id}">
+                                        <span class="checkmark">
+                                            <i class="fas fa-check check-icon"></i>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="signal-icons">
+                                    ${generateSignalBars(level)}
+                                </div>
+                                <div class="level-name">${getLevelName(level)}</div>
+                                <div class="button-group">
+                                    <button class="details-btn" data-id="${startup.id}">
+                                        <i class="fas fa-info-circle"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            const detailsButtons = document.querySelectorAll(".details-btn");
+            detailsButtons.forEach((button, index) => {
+                button.addEventListener("click", () => viewDetails(startups[index].id));
+            });
+
+            const completeCheckboxes = document.querySelectorAll(".complete-check");
+            completeCheckboxes.forEach((checkbox) => {
+                checkbox.addEventListener("change", (e) => {
+                    if (e.target.checked) {
+                        const startupId = checkbox.getAttribute("data-id");
+                        
+                        // Confirm before marking as complete
+                        if (confirm("Are you sure you want to mark this startup as complete?")) {
+                            markAsComplete(startupId);
+                        } else {
+                            // If user cancels, uncheck the checkbox
+                            e.target.checked = false;
+                        }
+                    }
+                });
+            });
+        }
+
+        async function viewDetails(id) {
+            try {
+                const startupRef = doc(db, "startups", id);
+                const startupSnapshot = await getDoc(startupRef);
+
+                if (startupSnapshot.exists()) {
+                    const startup = startupSnapshot.data();
+
+                    const growthPoints = [
+                        "Startup Idea Validation, Market surveys",
+                        "Business Model Canvas",
+                        "Legal compliances and Secretarial Services",
+                        "PoC, Prototyping, testing and MVP Development",
+                        "Government grants and Angel funding",
+                        "Marketing Planning",
+                        "Product and service development",
+                        "Go to Market -Strategy development and Implementation",
+                        "Branding and Promotion",
+                        "Funding and Investment",
+                        "Systems and structures development",
+                        "Scaling Up"
+                    ];
+
+                    function updateProgressBar(percentage) {
+                        const progressBar = document.getElementById('progress-bar');
+                        progressBar.style.width = percentage + '%';
+                        progressBar.textContent = percentage.toFixed(2) + '%'; // Show decimal precision
+
+                        // Change color based on percentage
+                        if (percentage < 50) {
+                            progressBar.className = 'progress-bar red';
+                        } else if (percentage >= 50 && percentage <= 70) {
+                            progressBar.className = 'progress-bar orange';
+                        } else {
+                            progressBar.className = 'progress-bar green';
+                        }
+                    }
+
+                    async function fetchTotalGrowthPointsAndUpdateProgressBar(startupId) {
+                        try {
+                            const startupRef = doc(db, "startups", startupId);
+                            const startupSnapshot = await getDoc(startupRef);
+
+                            if (startupSnapshot.exists()) {
+                                const startupData = startupSnapshot.data();
+                                const growthArray = startupData.growth || [];
+
+                                // Sum up all numerical values in the growth array
+                                const totalGrowthPoints = growthArray.reduce((sum, point) => sum + (parseFloat(point) || 0), 0);
+
+                                const maxPoints = 120; // Set the maximum possible growth points
+                                const percentage = (totalGrowthPoints / maxPoints) * 100;
+
+                                updateProgressBar(percentage);
+                            } else {
+                                console.error("Startup not found.");
+                            }
+                        } catch (error) {
+                            console.error("Error fetching growth points:", error);
+                        }
+                    }
+
+                    // Generate growth details dynamically
+                    const growthDetails = startup.growth
+                        ? growthPoints.map((point, index) => `
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                ${point}: <strong>${startup.growth[index] || "Not started"}</strong>
+                            </li>
+                        `).join("")
+                        : "<li>No growth details available.</li>";
+
+                    // Render detailed information
+                    mainSection.innerHTML = `
+                        <div class="section-header">
+                            <h2><i class="fas fa-info-circle"></i> Startup Details</h2>
+                            <button id="back-btn">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </button>
+                        </div>
+                        <div class="details-container">
+                            <div class="details-card">
+                                <div class="details-header">
+                                    <i class="fas fa-building"></i>
+                                    <h3>${startup.organizationName}</h3>
+                                </div>
+                                <div class="details-content">
+                                    <div class="info-section">
+                                        <h4><i class="fas fa-user"></i> Contact Information</h4>
+                                        <p><strong>Owner Name:</strong> ${startup.ownerName}</p>
+                                        <p><strong>Phone Number:</strong> ${startup.phoneNumber}</p>
+                                        <p><strong>Email:</strong> ${startup.email}</p>
+                                        <p><strong>Registration Date:</strong> ${startup.registrationDate || "Not available"}</p>
+                                        <p><strong>Level:</strong> ${startup.level || "Not specified"}</p>
+                                    </div>
+                                    
+                                    <div class="progress-section">
+                                        <h4><i class="fas fa-chart-line"></i> Growth Progress</h4>
+                                        <div class="progress-container">
+                                            <div id="progress-bar" class="progress-bar">0%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="growth-section">
+                                        <h4><i class="fas fa-tasks"></i> Growth Details</h4>
+                                        <ul>
+                                            ${growthDetails}
+                                        </ul>
+                                    </div>
+
+                                    <div class="documents-section">
+                                        <h4><i class="fas fa-file-alt"></i> Documents</h4>
+                                        <p>
+                                            <a href="${startup.driveLink}" target="_blank" class="document-link">
+                                                <i class="fas fa-external-link-alt"></i> View Documents
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    fetchTotalGrowthPointsAndUpdateProgressBar(id);
+
+                    document.getElementById("back-btn").addEventListener("click", loadAcceptedStartups);
+                } else {
+                    alert("Startup not found.");
+                }
+            } catch (error) {
+                console.error("Error loading details:", error);
+                alert("Failed to load details.");
+            }
+        }
+
+        async function markAsComplete(id) {
+            try {
+                const startupRef = doc(db, "startups", id);
+                await updateDoc(startupRef, { status: "Completed" });
+
+                const mentorRef = doc(db, "adminsAndMentors", mentorId);
+                await updateDoc(mentorRef, { completed: arrayUnion(id) });
+
+                alert("Startup marked as completed!");
+                loadAcceptedStartups();
+            } catch (error) {
+                console.error("Error marking as complete:", error);
+                alert("Failed to mark as complete.");
+            }
+        }
+
+        async function loadCompletedStartups() {
+            try {
+                const mentorRef = doc(db, "adminsAndMentors", mentorId);
+                const mentorSnapshot = await getDoc(mentorRef);
+
+                if (!mentorSnapshot.exists()) {
+                    mainSection.innerHTML = `<p>No completed startups found.</p>`;
+                    return;
+                }
+
+                const mentorData = mentorSnapshot.data();
+                const completedStartupIds = mentorData.completed || [];
+
+                if (completedStartupIds.length === 0) {
+                    mainSection.innerHTML = `<p>No startups have been completed yet.</p>`;
+                    return;
+                }
+
+                const completedStartups = [];
+                for (const id of completedStartupIds) {
+                    const startupRef = doc(db, "startups", id);
+                    const startupSnapshot = await getDoc(startupRef);
+
+                    if (startupSnapshot.exists()) {
+                        completedStartups.push({
+                            id: startupSnapshot.id,
+                            ...startupSnapshot.data()
+                        });
+                    }
+                }
+
+                renderCompletedStartups(completedStartups);
+            } catch (error) {
+                console.error("Error loading completed startups:", error);
+                mainSection.innerHTML = `<p>Error loading completed startups. Please try again later.</p>`;
+            }
+        }
+
+        function renderCompletedStartups(startups) {
+            mainSection.innerHTML = `
+                <div class="section-header">
+                    <h2><i class="fas fa-flag-checkered"></i> Completed Startups</h2>
+                    <p class="subtitle">${startups.length} startups successfully completed</p>
+                </div>
+                <div class="container">
+                    ${startups.map(startup => {
+                        const level = parseInt(startup.level) || 1;
+                        return `
+                        <div class="card completed-card">
+                            <div class="card-header">
+                                <i class="fas fa-building"></i>
+                                <h4>${startup.organizationName || startup.name}</h4>
+                                <span class="status-badge completed">
+                                    <i class="fas fa-check"></i> Completed
+                                </span>
+                            </div>
+                            <div class="card-content">
+                                <div class="signal-icons">
+                                    ${generateSignalBars(level)}
+                                </div>
+                                <div class="level-name">${getLevelName(level)}</div>
+                                <button class="details-btn" data-id="${startup.id}">
+                                    <i class="fas fa-info-circle"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            document.querySelectorAll('.details-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const startupId = btn.getAttribute('data-id');
+                    viewDetails(startupId);
+                });
+            });
+        }
+
+        document.getElementById("ProfileSwitch").addEventListener("click", () => {
+            mainSection.innerHTML = ""; // Clear any existing content
+            loadMentorProfile(mentorId); // Load the profile when Profile button is clicked
+        });
+
+        document.getElementById("availableSwitch").addEventListener("click", loadAvailableStartups);
+        document.getElementById("acceptedSwitch").addEventListener("click", loadAcceptedStartups);
+        document.getElementById("completedSwitch").addEventListener("click", loadCompletedStartups);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                fetchCurrentMentorId(user.email).then(loadAvailableStartups);
+            } else {
+                alert("No user logged in.");
+                window.location.href = "login.html";
+            }
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                alert("Logged out successfully!");
+                window.location.href = "login.html"; // Redirect to login page after logout
+            } catch (error) {
+                console.error("Logout failed: ", error);
+                alert("Failed to log out. Please try again.");
+            }
+        });
+    </script>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <i class="fas fa-user-tie"></i>
+            <h1>Mentor Dashboard</h1>
+        </div>
+        <button id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </nav>
+    <div class="switches-container">
+        <button id="ProfileSwitch">
+            <i class="fas fa-user-circle"></i> Profile
+        </button>
+        <button id="availableSwitch">
+            <i class="fas fa-list"></i> Available Startups
+        </button>
+        <button id="acceptedSwitch">
+            <i class="fas fa-check-circle"></i> Accepted Startups
+        </button>
+        <button id="completedSwitch">
+            <i class="fas fa-flag-checkered"></i> Completed Startups
+        </button>
+    </div>
+    <div class="main-section" id="mainSection">
+        <!-- Dynamic content will be rendered here -->
+    </div>
+
+    <style>
+        /* Avatar styling */
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            padding-right: 20px;
+        }
+        
+        .mentor-avatar {
+            width: 150px;
+            height: 190px;
+        }
+        
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-layout {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+
+        .profile-section {
+            flex: 1;
+        }
+
+        .edit-form {
+            flex: 1;
+        }
+
+        /* Enhanced Checkbox styling */
+        .complete-checkbox {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .checkbox-container {
+            display: block;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            width: 28px;
+            height: 28px;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 28px;
+            width: 28px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #3498db;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .check-icon {
+            color: transparent;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-container:hover .checkmark {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .checkbox-container input:checked ~ .checkmark .check-icon {
+            color: white;
+        }
+
+        .checkbox-container input:disabled ~ .checkmark {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        /* Card transition effects */
+        .card {
+            transition: all 0.4s ease;
+        }
+
+        .card.completing {
+            border-left: 4px solid #27ae60;
+        }
+
+        /* Card styling update */
+        .card-header {
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .profile-layout {
+                flex-direction: column;
+            }
+            
+            .avatar-container {
+                margin-bottom: 20px;
+                padding-right: 0;
+                align-self: center;
+            }
+        }
+    </style>
+</body>
+</html>

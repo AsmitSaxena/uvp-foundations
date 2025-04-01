@@ -1,0 +1,120 @@
+/* Footer Section */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 3rem;
+    color: white;
+    background-image: url(assets/imgs/intro-background.jpg); /* Replace with your background image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    text-align: left;
+}
+
+/* Footer Columns */
+.footer-column {
+    flex: 1;
+    min-width: 300px; /* Ensure columns stack when screen size reduces */
+    margin-bottom: 2rem;
+    padding: 0 1.5rem;
+}
+
+/* Section Headings */
+.footer-column h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #FFD700; /* Optional: use a gold or accent color for headings */
+}
+
+/* First Column Text */
+.footer-column p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-top: 1rem;
+}
+
+/* Logo */
+.footer-logo {
+    max-width: 100px;
+    margin-top: 1rem;
+}
+
+/* Quick Links */
+.quick-links {
+    list-style: none;
+    margin-top: 1rem;
+    padding: 0;
+}
+
+.quick-links li {
+    margin-bottom: 0.5rem;
+}
+
+.quick-links a {
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s;
+}
+
+.quick-links a:hover {
+    color: #FFD700; /* Optional: use a gold or accent color for link hover */
+}
+
+/* Contact Info */
+.contact-info {
+    margin-top: 1rem;
+}
+
+.contact-info a {
+    color: rgb(218, 222, 160);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer {
+        padding: 2rem;
+        flex-direction: column;
+        align-items: center;
+        text-align: center; /* Center-align text for smaller screens */
+    }
+
+    .footer-column {
+        margin-bottom: 1.5rem;
+        padding: 0;
+    }
+
+    .footer-column h3 {
+        font-size: 1.6rem;
+    }
+
+    .footer-logo {
+        max-width: 80px;
+    }
+
+    .footer-column p, .contact-info p {
+        font-size: 0.9rem;
+    }
+
+    .quick-links a {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer {
+        padding: 1.5rem;
+    }
+
+    .footer-column h3 {
+        font-size: 1.4rem;
+    }
+
+    .footer-column p, .contact-info p {
+        font-size: 0.8rem;
+    }
+
+    .quick-links a {
+        font-size: 0.8rem;
+    }
+}
