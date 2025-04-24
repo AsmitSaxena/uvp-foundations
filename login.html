@@ -12,6 +12,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -27,6 +28,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         const mainSection = document.getElementById("mainSection");
 
@@ -184,12 +186,12 @@
                         <i class="fas fa-check-circle"></i>
                         <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
                     </div>
-                    <label for="driveLink" id="driveLinkLabel" title="Upload your documents to drive and share the link here">
-                        <i class="fas fa-info-circle"></i> Drive Link for Company Documents
+                    <label for="companyDocs" id="companyDocsLabel" title="Upload your company documents in PDF format">
+                        <i class="fas fa-info-circle"></i> Upload Company Documents (PDF)
                     </label>
                     <div class="input-group">
-                        <i class="fas fa-link"></i>
-                        <input type="url" id="driveLink" placeholder="Enter Drive link">
+                        <i class="fas fa-file-pdf"></i>
+                        <input type="file" id="companyDocs" accept="application/pdf" required>
                     </div>
                     <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
                 </form>
@@ -203,12 +205,22 @@
                 const email = document.getElementById("registerEmail").value;
                 const password = document.getElementById("registerPassword").value;
                 const confirmPassword = document.getElementById("confirmPassword").value;
-                const driveLink = document.getElementById("driveLink").value;
+                const companyDocsInput = document.getElementById("companyDocs");
+                const companyDocsFile = companyDocsInput.files[0];
 
                 if (password !== confirmPassword) {
                     alert("Passwords do not match!");
                     return;
                 }
+                if (!companyDocsFile) {
+                    alert("Please upload a PDF document.");
+                    return;
+                }
+                // You can now use companyDocsFile to upload to your backend or storage
+                // Example: create a FormData object and append the file
+                // let formData = new FormData();
+                // formData.append('companyDocs', companyDocsFile);
+                // Then send formData using fetch or XMLHttpRequest
 
                 try {
                     // Create user with email and password
@@ -216,13 +228,18 @@
                     const uid = userCredential.user.uid;
                     const registrationDate = new Date().toISOString();
 
-                    // Add startup data to Firestore
+                    // Upload PDF to Firebase Storage
+                    const storageRef = ref(storage, `startup_docs/${uid}/${companyDocsFile.name}`);
+                    await uploadBytes(storageRef, companyDocsFile);
+                    const docUrl = await getDownloadURL(storageRef);
+
+                    // Add startup data to Firestore with document URL
                     await addDoc(collection(db, "startups"), {
                         ownerName,
                         organizationName,
                         phoneNumber,
                         email,
-                        driveLink,
+                        docUrl, // Store the download URL
                         registrationDate,
                         level: "null",
                         status: "available"
